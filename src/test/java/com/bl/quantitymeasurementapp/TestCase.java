@@ -57,4 +57,51 @@ public class TestCase {
         // Then
         assertTrue("A Feet object compared with its own reference should return true.",result);
     }
+     //==========================================
+    //          INCHES EQUALITY TEST CASES
+    // ==========================================
+
+    @Test
+    public void givenSameInchesValues_WhenCompared_ShouldReturnTrue() {
+        boolean result = QuantityMeasurementApp.checkInchesEquality(1.0, 1.0);
+        assertTrue("Two Inches objects with the same value should be equal.", result);
+    }
+
+    @Test
+    public void givenDifferentInchesValues_WhenCompared_ShouldReturnFalse() {
+        boolean result = QuantityMeasurementApp.checkInchesEquality(1.0, 2.0);
+        assertFalse("Two Inches objects with different values should not be equal.", result);
+    }
+
+    @Test
+    public void givenInchesValueAndNull_WhenCompared_ShouldReturnFalse() {
+        QuantityMeasurementApp.Inches inch = new QuantityMeasurementApp.Inches(1.0);
+        assertFalse("Comparing an Inches object with null should return false.", inch.equals(null));
+    }
+
+    @Test
+    public void givenInchesValueAndDifferentTypeObject_WhenCompared_ShouldReturnFalse() {
+        QuantityMeasurementApp.Inches inch = new QuantityMeasurementApp.Inches(1.0);
+        String nonNumericInput = "1.0";
+        assertFalse("Comparing an Inches object with a non-Inches object should return false.", inch.equals(nonNumericInput));
+    }
+
+    @Test
+    public void givenSameInchesReference_WhenCompared_ShouldReturnTrue() {
+        QuantityMeasurementApp.Inches inch = new QuantityMeasurementApp.Inches(1.0);
+        assertTrue("An Inches object compared with its own reference should return true.", inch.equals(inch));
+    }
+
+    // ==================================================
+    // TYPE SAFETY CROSS-CHECK (Feet vs Inches Isolation)
+    // ==================================================
+
+    @Test
+    public void givenFeetAndInchesWithSameValue_WhenCompared_ShouldReturnFalse() {
+        QuantityMeasurementApp.Feet feet = new QuantityMeasurementApp.Feet(1.0);
+        QuantityMeasurementApp.Inches inch = new QuantityMeasurementApp.Inches(1.0);
+
+        assertFalse("Feet object and Inches object should not be equal even if values match.", feet.equals(inch));
+    }
 }
+
