@@ -1,90 +1,40 @@
 package com.bl.quantitymeasurementapp;
 
 public class QuantityMeasurementApp {
-
-    // Inner class representing the Feet measurement
-    public static class Feet {
-        private final double value;
-
-        // Constructor to initialize the final value
-        public Feet(double value) {
-
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            // Step 1: Check if the object is the same reference (Reflexive)
-            if (this == obj) {
-                return true;
-            }
-
-            // Step 2: Check if the object is null or of a different class (Type Safety)
-            if (obj == null || this.getClass() != obj.getClass()) {
-                return false;
-            }
-
-            // Step 3: Safe cast to Feet type
-            Feet other = (Feet) obj;
-
-            // Step 4: Compare double values precisely using Double.compare()
-            return Double.compare(this.value, other.value) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Double.hashCode(value);
-        }
-
-    }
-    // --- INNER CLASS: INCHES ---
-    public static class Inches {
-        private final double value;
-
-        public Inches(double value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || this.getClass() != obj.getClass()) return false;
-            Inches other = (Inches) obj;
-            return Double.compare(this.value, other.value) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            return Double.hashCode(value);
-        }
+    // Create a generic method to demonstrate Length equality check
+    public static boolean demonstrateLengthEquality(Length length1, Length length2) {
+        if (length1 == null) return false;
+        return length1.equals(length2);
     }
 
-
-    // Static helper method for Feet comparison
-    public static boolean checkFeetEquality(double value1, double value2) {
-        Feet feet1 = new Feet(value1);
-        Feet feet2 = new Feet(value2);
-        return feet1.equals(feet2);
+    // Create a static method to demonstrate Feet equality check
+    public static void demonstrateFeetEquality() {
+        Length feet1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length feet2 = new Length(1.0, Length.LengthUnit.FEET);
+        boolean result = demonstrateLengthEquality(feet1, feet2);
+        System.out.println("Input: 1.0 ft and 1.0 ft -> Output: Equal (" + result + ")");
     }
 
-    // Static helper method for Inches comparison
-    public static boolean checkInchesEquality(double value1, double value2) {
-        Inches inch1 = new Inches(value1);
-        Inches inch2 = new Inches(value2);
-        return inch1.equals(inch2);
+    // Create a static method to demonstrate Inches equality check
+    public static void demonstrateInchesEquality() {
+        Length inches1 = new Length(1.0, Length.LengthUnit.INCHES);
+        Length inches2 = new Length(1.0, Length.LengthUnit.INCHES);
+        boolean result = demonstrateLengthEquality(inches1, inches2);
+        System.out.println("Input: 1.0 inch and 1.0 inch -> Output: Equal (" + result + ")");
     }
 
-    // Main method for a quick manual verification run
+    // Create a static method to demonstrate Feet and Inches cross-comparison
+    public static void demonstrateFeetInchesComparison() {
+        Length feet = new Length(1.0, Length.LengthUnit.FEET);
+        Length inches = new Length(12.0, Length.LengthUnit.INCHES);
+        boolean result = demonstrateLengthEquality(feet, inches);
+        System.out.println("Input: 1.0 ft and 12.0 inches -> Output: Equal (" + result + ")");
+    }
+
+    // Main method matching image_7adecb.jpg
     public static void main(String[] args) {
-        // Checking Inches equality via static flow
-        boolean inchResult = checkInchesEquality(1.0, 1.0);
-        System.out.println("Input: 1.0 inch and 1.0 inch");
-        System.out.println("Output: Equal (" + inchResult + ")");
-
-        // Checking Feet equality via static flow
-        boolean feetResult = checkFeetEquality(1.0, 1.0);
-        System.out.println("Input: 1.0 ft and 1.0 ft");
-        System.out.println("Output: Equal (" + feetResult + ")");
-
+        demonstrateFeetEquality();
+        demonstrateInchesEquality();
+        demonstrateFeetInchesComparison();
     }
 }
