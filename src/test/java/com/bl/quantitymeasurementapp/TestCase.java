@@ -153,7 +153,115 @@ public class TestCase {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConversion_NaNValue_Throws() {
+
         new Length(Double.NaN, Length.LengthUnit.FEET);
+    }
+    @Test
+    public void testAddition_SameUnit_FeetPlusFeet() {
+        Length feet1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length feet2 = new Length(2.0, Length.LengthUnit.FEET);
+        Length result = feet1.add(feet2);
+        Length expected = new Length(3.0, Length.LengthUnit.FEET);
+        assertTrue("1.0 FT + 2.0 FT should equal 3.0 FT.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_SameUnit_InchPlusInch() {
+        Length inch1 = new Length(6.0, Length.LengthUnit.INCHES);
+        Length inch2 = new Length(6.0, Length.LengthUnit.INCHES);
+        Length result = inch1.add(inch2);
+        Length expected = new Length(12.0, Length.LengthUnit.INCHES);
+        assertTrue("6.0 INCHES + 6.0 INCHES should equal 12.0 INCHES.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_CrossUnit_FeetPlusInches() {
+        Length feet = new Length(1.0, Length.LengthUnit.FEET);
+        Length inches = new Length(12.0, Length.LengthUnit.INCHES);
+        Length result = feet.add(inches);
+        Length expected = new Length(2.0, Length.LengthUnit.FEET);
+        assertTrue("1.0 FT + 12.0 INCHES should equal 2.0 FT.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_CrossUnit_InchPlusFeet() {
+        Length inches = new Length(12.0, Length.LengthUnit.INCHES);
+        Length feet = new Length(1.0, Length.LengthUnit.FEET);
+        Length result = inches.add(feet);
+        Length expected = new Length(24.0, Length.LengthUnit.INCHES);
+        assertTrue("12.0 INCHES + 1.0 FT should equal 24.0 INCHES.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_CrossUnit_YardPlusFeet() {
+        Length yard = new Length(1.0, Length.LengthUnit.YARDS);
+        Length feet = new Length(3.0, Length.LengthUnit.FEET);
+        Length result = yard.add(feet);
+        Length expected = new Length(2.0, Length.LengthUnit.YARDS);
+        assertTrue("1.0 YARD + 3.0 FT should equal 2.0 YARDS.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_CrossUnit_CentimeterPlusInch() {
+        Length cm = new Length(2.54, Length.LengthUnit.CENTIMETERS);
+        Length inches = new Length(1.0, Length.LengthUnit.INCHES);
+        Length result = cm.add(inches);
+        Length expected = new Length(5.08, Length.LengthUnit.CENTIMETERS);
+        assertTrue("2.54 CM + 1.0 INCH should equal approximately 5.08 CM.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_Commutativity() {
+        Length feet = new Length(1.0, Length.LengthUnit.FEET);
+        Length inches = new Length(12.0, Length.LengthUnit.INCHES);
+
+        Length sumAB = feet.add(inches); // Expressed in FEET
+        Length sumBA = inches.add(feet); // Expressed in INCHES
+
+        // To verify mathematical commutativity independent of target unit display, compare base unit equivalence
+        assertTrue("Addition must be commutative: A + B == B + A.", sumAB.equals(sumBA));
+    }
+
+    @Test
+    public void testAddition_WithZero() {
+        Length feet = new Length(5.0, Length.LengthUnit.FEET);
+        Length inches = new Length(0.0, Length.LengthUnit.INCHES);
+        Length result = feet.add(inches);
+        Length expected = new Length(5.0, Length.LengthUnit.FEET);
+        assertTrue("Adding zero acts as an identity element leaving value unchanged.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_NegativeValues() {
+        Length feet1 = new Length(5.0, Length.LengthUnit.FEET);
+        Length feet2 = new Length(-2.0, Length.LengthUnit.FEET);
+        Length result = feet1.add(feet2);
+        Length expected = new Length(3.0, Length.LengthUnit.FEET);
+        assertTrue("Addition with negative measurements should subtract appropriately.", result.equals(expected));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddition_NullSecondOperand() {
+        Length feet = new Length(1.0, Length.LengthUnit.FEET);
+        feet.add(null);
+    }
+
+    @Test
+    public void testAddition_LargeValues() {
+        Length l1 = new Length(1e6, Length.LengthUnit.FEET);
+        Length l2 = new Length(1e6, Length.LengthUnit.FEET);
+        Length result = l1.add(l2);
+        Length expected = new Length(2e6, Length.LengthUnit.FEET);
+        assertTrue("Large magnitudes must add cleanly without precision breakdown.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_SmallValues() {
+        Length l1 = new Length(0.001, Length.LengthUnit.FEET);
+        Length l2 = new Length(0.002, Length.LengthUnit.FEET);
+        Length result = l1.add(l2);
+        Length expected = new Length(0.003, Length.LengthUnit.FEET);
+        assertTrue("Small float values must compute accurately within defined tolerances.", result.equals(expected));
     }
 }
 
