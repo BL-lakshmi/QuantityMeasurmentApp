@@ -1,8 +1,8 @@
 package com.bl.quantitymeasurementapp;
 
 import org.junit.Test;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 
 public class TestCase {
     @Test
@@ -135,13 +135,7 @@ public class TestCase {
         assertTrue("Converting 3 feet via API should yield exactly 36 inches.", QuantityMeasurementApp.demonstrateLengthEquality(lengthInInches, expectedLength));
     }
 
-    @Test
-    public void convertYardsToInchesUsingOverloadedMethod() {
-        Length lengthInYards = new Length(2.0, Length.LengthUnit.YARDS);
-        Length lengthInInches = QuantityMeasurementApp.demonstrateLengthConversion(lengthInYards, Length.LengthUnit.INCHES);
-        Length expectedLength = new Length(72.0, Length.LengthUnit.INCHES);
-        assertTrue("Overloaded call converting 2 yards object instance must safely equate to a 72 inches instance.", QuantityMeasurementApp.demonstrateLengthEquality(lengthInInches, expectedLength));
-    }
+
 
     // --- ADDITIONAL UC5 EXCEPTIONAL FLOW TESTS ---
 
@@ -262,6 +256,108 @@ public class TestCase {
         Length result = l1.add(l2);
         Length expected = new Length(0.003, Length.LengthUnit.FEET);
         assertTrue("Small float values must compute accurately within defined tolerances.", result.equals(expected));
+    }
+    @Test
+    public void testAddition_ExplicitTargetUnit_Feet() {
+        Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
+        Length result = l1.add(l2, Length.LengthUnit.FEET);
+        Length expected = new Length(2.0, Length.LengthUnit.FEET);
+        assertTrue("1 Foot + 12 Inches explicitly targeting Feet should equal 2 Feet.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Inches() {
+        Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
+        Length result = l1.add(l2, Length.LengthUnit.INCHES);
+        Length expected = new Length(24.0, Length.LengthUnit.INCHES);
+        assertTrue("1 Foot + 12 Inches explicitly targeting Inches should equal 24 Inches.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_YARDS() {
+        Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
+        Length result = l1.add(l2, Length.LengthUnit.YARDS);
+
+        // 24 total inches / 36 inches per yard = 0.667 yards
+        assertEquals("Numeric value check for fractional yards representation.", 0.667, result.getValue(), 0.001);
+        assertEquals("Unit token validation check.", Length.LengthUnit.YARDS, result.getUnit());
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Centimeters() {
+        Length l1 = new Length(1.0, Length.LengthUnit.INCHES);
+        Length l2 = new Length(1.0, Length.LengthUnit.INCHES);
+        Length result = l1.add(l2, Length.LengthUnit.CENTIMETERS);
+
+        // 2 inches / 0.393701 conversion scale = 5.0802
+        assertEquals("Explicit centimeter mapping validation.", 5.08, result.getValue(), 0.01);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_SameAsFirstOperand() {
+        Length l1 = new Length(2.0, Length.LengthUnit.YARDS);
+        Length l2 = new Length(3.0, Length.LengthUnit.FEET);
+        Length result = l1.add(l2, Length.LengthUnit.YARDS);
+        Length expected = new Length(3.0, Length.LengthUnit.YARDS);
+        assertTrue("2 Yards + 3 Feet targeting Yards should equal 3 Yards.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_SameAsSecondOperand() {
+        Length l1 = new Length(2.0, Length.LengthUnit.YARDS);
+        Length l2 = new Length(3.0, Length.LengthUnit.FEET);
+        Length result = l1.add(l2, Length.LengthUnit.FEET);
+        Length expected = new Length(9.0, Length.LengthUnit.FEET);
+        assertTrue("2 Yards + 3 Feet targeting Feet should equal 9 Feet.", result.equals(expected));
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_Commutativity() {
+        Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
+
+        Length sumAB = l1.add(l2, Length.LengthUnit.YARDS);
+        Length sumBA = l2.add(l1, Length.LengthUnit.YARDS);
+
+        assertTrue("Commutative equality must map evenly regardless of parameter insertion layout context.", sumAB.equals(sumBA));
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_WithZero() {
+        Length l1 = new Length(5.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(0.0, Length.LengthUnit.INCHES);
+        Length result = l1.add(l2, Length.LengthUnit.YARDS);
+
+        // 60 inches / 36 = 1.667 yards
+        assertEquals("Identity conversion mapping checks.", 1.667, result.getValue(), 0.001);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_NegativeValues() {
+        Length l1 = new Length(5.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(-2.0, Length.LengthUnit.FEET);
+        Length result = l1.add(l2, Length.LengthUnit.INCHES);
+        Length expected = new Length(36.0, Length.LengthUnit.INCHES);
+        assertTrue("Negative values compute arithmetic differences and express cleanly inside target bounds.", result.equals(expected));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddition_ExplicitTargetUnit_NullTargetUnit() {
+        Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
+        l1.add(l2, null);
+    }
+
+    @Test
+    public void testAddition_ExplicitTargetUnit_LargeToSmallScale() {
+        Length l1 = new Length(1000.0, Length.LengthUnit.FEET);
+        Length l2 = new Length(500.0, Length.LengthUnit.FEET);
+        Length result = l1.add(l2, Length.LengthUnit.INCHES);
+        Length expected = new Length(18000.0, Length.LengthUnit.INCHES);
+        assertTrue("Up-scaling massive metrics should map structurally across bounds accurately.", result.equals(expected));
     }
 }
 

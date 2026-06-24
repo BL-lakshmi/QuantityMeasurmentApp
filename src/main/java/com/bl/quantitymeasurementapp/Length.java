@@ -86,45 +86,58 @@ public class Length {
         }
         double valueInInches = this.value * this.unit.getConversionFactor();
         double convertedValue = valueInInches / targetUnit.getConversionFactor();
-        double roundedValue = Math.round(convertedValue * 100.0) / 100.0;
+        double roundedValue = Math.round(convertedValue * 1000.0) / 1000.0; // 3 decimal places for fractional yards
         return new Length(roundedValue, targetUnit);
     }
 
     /**
-     * Adds another Length object to the current Length and returns the result
-     * expressed in the unit of the first operand (this instance's unit).
-     *
-     * @param thatLength the second operand to add
-     * @return a new Length instance representing the sum
+     * Private utility addition method.
+     * Consolidates arithmetic pipeline to avoid code duplication across overloaded methods.
      */
-    public Length add(Length thatLength) {
+    private Length performAddition(Length thatLength, LengthUnit targetUnit) {
         if (thatLength == null) {
             throw new IllegalArgumentException("Operand for addition cannot be null");
         }
-        // Pipeline: 1. Convert both to base unit (inches)
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
         double firstValueInInches = this.value * this.unit.getConversionFactor();
         double secondValueInInches = thatLength.value * thatLength.unit.getConversionFactor();
 
-        // 2. Compute total sum in base unit
         double totalInches = firstValueInInches + secondValueInInches;
+        double finalValue = totalInches / targetUnit.getConversionFactor();
+        double roundedValue = Math.round(finalValue * 1000.0) / 1000.0; // 3 decimal precision for scales like yards (~0.667)
 
-        // 3. Convert sum back into the unit of the first operand
-        double finalValue = totalInches / this.unit.getConversionFactor();
-        double roundedValue = Math.round(finalValue * 100.0) / 100.0;
+        return new Length(roundedValue, targetUnit);
+    }
 
-        return new Length(roundedValue, this.unit);
+    /**
+     * UC6: Implicit addition using the unit of the first operand (this instance's unit).
+     */
+    public Length add(Length thatLength) {
+        return performAddition(thatLength, this.unit);
+    }
+
+    /**
+     * UC7: Overloaded explicit addition method specifying an independent target destination unit.
+     */
+    public Length add(Length thatLength, LengthUnit targetUnit) {
+        return performAddition(thatLength, targetUnit);
     }
 
     @Override
     public String toString() {
-        return String.format("%.2f %s", this.value, this.unit);
+        return String.format("%.3f %s", this.value, this.unit);
     }
 
+    // Standalone main check matching image_8b3905.jpg
     public static void main(String[] args) {
         Length l1 = new Length(1.0, LengthUnit.FEET);
         Length l2 = new Length(12.0, LengthUnit.INCHES);
-        Length result = l1.add(l2);
-        System.out.println("Result of 1.0 FEET + 12.0 INCHES = " + result); // Output: 2.0 FEET
+
+        System.out.println("Explicit addition to FEET: " + l1.add(l2, LengthUnit.FEET));
+        System.out.println("Explicit addition to INCHES: " + l1.add(l2, LengthUnit.INCHES));
+        System.out.println("Explicit addition to YARDS: " + l1.add(l2, LengthUnit.YARDS));
     }
 }
 

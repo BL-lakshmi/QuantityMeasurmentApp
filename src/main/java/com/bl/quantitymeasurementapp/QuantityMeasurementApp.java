@@ -17,50 +17,39 @@ public class QuantityMeasurementApp {
         return sourceLength.convertTo(toUnit);
     }
 
-    public static Length demonstrateLengthConversion(Length length, Length.LengthUnit toUnit) {
-        if (length == null) {
-            throw new IllegalArgumentException("Source length instance cannot be null");
-        }
-        return length.convertTo(toUnit);
-    }
-
     /**
-     * Overloaded Demonstration Method 1: Takes raw components and computes sum in targetUnit.
-     */
-    public static Length demonstrateLengthAddition(double value1, Length.LengthUnit unit1, double value2, Length.LengthUnit unit2, Length.LengthUnit targetUnit) {
-        Length l1 = new Length(value1, unit1);
-        Length l2 = new Length(value2, unit2);
-        Length sum = l1.add(l2);
-        return sum.convertTo(targetUnit);
-    }
-
-    /**
-     * Overloaded Demonstration Method 2: Takes existing object instances and computes sum.
+     * Overloaded Addition Demo Pattern 1: Implicit execution targeting first operand unit layout.
      */
     public static Length demonstrateLengthAddition(Length length1, Length length2) {
-        if (length1 == null || length2 == null) {
+        if (length1 == null) {
             throw new IllegalArgumentException("Operands cannot be null");
         }
         return length1.add(length2);
     }
 
-    // Main execution method demonstrating required examples from specification
+    /**
+     * Overloaded Addition Demo Pattern 2: Explicit application with user-defined target unit tracking.
+     */
+    public static Length demonstrateLengthAddition(double value1, Length.LengthUnit unit1, double value2, Length.LengthUnit unit2, Length.LengthUnit targetUnit) {
+        Length l1 = new Length(value1, unit1);
+        Length l2 = new Length(value2, unit2);
+        return l1.add(l2, targetUnit);
+    }
+
+    // Main deployment application block matching image_8b3922.jpg
     public static void main(String[] args) {
-        System.out.println("--- UC6 Demonstration of Length Addition ---");
+        System.out.println("--- UC7 API Specification Validation Runs ---");
 
-        Length sum1 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 2.0, Length.LengthUnit.FEET, Length.LengthUnit.FEET);
-        System.out.println("add(1.0 FT, 2.0 FT) -> " + sum1);
+        Length res1 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.FEET);
+        System.out.println("Result (Target FEET) -> " + res1);
 
-        Length sum2 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.FEET);
-        System.out.println("add(1.0 FT, 12.0 INCHES) -> " + sum2);
+        Length res2 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.INCHES);
+        System.out.println("Result (Target INCHES) -> " + res2);
 
-        Length sum3 = demonstrateLengthAddition(12.0, Length.LengthUnit.INCHES, 1.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES);
-        System.out.println("add(12.0 INCHES, 1.0 FT) -> " + sum3);
+        Length res3 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.YARDS);
+        System.out.println("Result (Target YARDS) -> " + res3);
 
-        Length sum4 = demonstrateLengthAddition(1.0, Length.LengthUnit.YARDS, 3.0, Length.LengthUnit.FEET, Length.LengthUnit.YARDS);
-        System.out.println("add(1.0 YARDS, 3.0 FT) -> " + sum4);
-
-        Length sum5 = demonstrateLengthAddition(2.54, Length.LengthUnit.CENTIMETERS, 1.0, Length.LengthUnit.INCHES, Length.LengthUnit.CENTIMETERS);
-        System.out.println("add(2.54 CM, 1.0 INCHES) -> " + sum5);
+        Length res4 = demonstrateLengthAddition(2.54, Length.LengthUnit.CENTIMETERS, 1.0, Length.LengthUnit.INCHES, Length.LengthUnit.CENTIMETERS);
+        System.out.println("Result (Target CM) -> " + res4);
     }
 }
