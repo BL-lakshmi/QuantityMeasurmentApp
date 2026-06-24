@@ -1,55 +1,23 @@
 package com.bl.quantitymeasurementapp;
 
 public class QuantityMeasurementApp {
-    public static boolean demonstrateLengthEquality(Length length1, Length length2) {
-        if (length1 == null) return false;
-        return length1.equals(length2);
+    public static boolean demonstrateLengthEquality(Length l1, Length l2) {
+        if (l1 == null) return false;
+        return l1.equals(l2);
     }
 
-    public static boolean demonstrateLengthComparison(double value1, Length.LengthUnit unit1, double value2, Length.LengthUnit unit2) {
-        Length length1 = new Length(value1, unit1);
-        Length length2 = new Length(value2, unit2);
-        return demonstrateLengthEquality(length1, length2);
+    public static Length demonstrateLengthConversion(double value, LengthUnit from, LengthUnit to) {
+        return new Length(value, from).convertTo(to);
     }
 
-    public static Length demonstrateLengthConversion(double value, Length.LengthUnit fromUnit, Length.LengthUnit toUnit) {
-        Length sourceLength = new Length(value, fromUnit);
-        return sourceLength.convertTo(toUnit);
+    public static Length demonstrateLengthAddition(double v1, LengthUnit u1, double v2, LengthUnit u2, LengthUnit target) {
+        return new Length(v1, u1).add(new Length(v2, u2), target);
     }
 
-    /**
-     * Overloaded Addition Demo Pattern 1: Implicit execution targeting first operand unit layout.
-     */
-    public static Length demonstrateLengthAddition(Length length1, Length length2) {
-        if (length1 == null) {
-            throw new IllegalArgumentException("Operands cannot be null");
-        }
-        return length1.add(length2);
-    }
-
-    /**
-     * Overloaded Addition Demo Pattern 2: Explicit application with user-defined target unit tracking.
-     */
-    public static Length demonstrateLengthAddition(double value1, Length.LengthUnit unit1, double value2, Length.LengthUnit unit2, Length.LengthUnit targetUnit) {
-        Length l1 = new Length(value1, unit1);
-        Length l2 = new Length(value2, unit2);
-        return l1.add(l2, targetUnit);
-    }
-
-    // Main deployment application block matching image_8b3922.jpg
     public static void main(String[] args) {
-        System.out.println("--- UC7 API Specification Validation Runs ---");
-
-        Length res1 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.FEET);
-        System.out.println("Result (Target FEET) -> " + res1);
-
-        Length res2 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.INCHES);
-        System.out.println("Result (Target INCHES) -> " + res2);
-
-        Length res3 = demonstrateLengthAddition(1.0, Length.LengthUnit.FEET, 12.0, Length.LengthUnit.INCHES, Length.LengthUnit.YARDS);
-        System.out.println("Result (Target YARDS) -> " + res3);
-
-        Length res4 = demonstrateLengthAddition(2.54, Length.LengthUnit.CENTIMETERS, 1.0, Length.LengthUnit.INCHES, Length.LengthUnit.CENTIMETERS);
-        System.out.println("Result (Target CM) -> " + res4);
+        System.out.println("--- UC8 Standalone Architecture Validation ---");
+        System.out.println("12 Inches to Base Unit (FEET): " + LengthUnit.INCHES.convertToBaseUnit(12.0));
+        System.out.println("1 Foot converted to Inches: " + new Length(1.0, LengthUnit.FEET).convertTo(LengthUnit.INCHES));
+        System.out.println("Addition (1 FT + 12 IN) to YARDS: " + new Length(1.0, LengthUnit.FEET).add(new Length(12.0, LengthUnit.INCHES), LengthUnit.YARDS));
     }
 }
