@@ -128,5 +128,32 @@ public class TestCase {
         boolean result = QuantityMeasurementApp.demonstrateLengthComparison(1.0, Length.LengthUnit.YARDS, 3.0, Length.LengthUnit.FEET);
         assertTrue("Application runner comparison should execute cleanly", result);
     }
+    @Test
+    public void convertFeetToInches() {
+        Length lengthInInches = QuantityMeasurementApp.demonstrateLengthConversion(3.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES);
+        Length expectedLength = new Length(36.0, Length.LengthUnit.INCHES);
+        assertTrue("Converting 3 feet via API should yield exactly 36 inches.", QuantityMeasurementApp.demonstrateLengthEquality(lengthInInches, expectedLength));
+    }
+
+    @Test
+    public void convertYardsToInchesUsingOverloadedMethod() {
+        Length lengthInYards = new Length(2.0, Length.LengthUnit.YARDS);
+        Length lengthInInches = QuantityMeasurementApp.demonstrateLengthConversion(lengthInYards, Length.LengthUnit.INCHES);
+        Length expectedLength = new Length(72.0, Length.LengthUnit.INCHES);
+        assertTrue("Overloaded call converting 2 yards object instance must safely equate to a 72 inches instance.", QuantityMeasurementApp.demonstrateLengthEquality(lengthInInches, expectedLength));
+    }
+
+    // --- ADDITIONAL UC5 EXCEPTIONAL FLOW TESTS ---
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConversion_InvalidUnit_Throws() {
+        Length input = new Length(5.0, Length.LengthUnit.FEET);
+        input.convertTo(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConversion_NaNValue_Throws() {
+        new Length(Double.NaN, Length.LengthUnit.FEET);
+    }
 }
 
