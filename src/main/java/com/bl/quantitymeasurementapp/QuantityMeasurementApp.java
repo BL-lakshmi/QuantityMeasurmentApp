@@ -17,14 +17,20 @@ public class QuantityMeasurementApp {
     }
 
     public static void main(String[] args) {
-        System.out.println("=== UC10 Unified Framework Execution ===");
+        System.out.println("=== UC11 Multi-Category Operational Demonstration ===");
 
-        Quantity<LengthUnit> lengthsMatch = new Quantity<>(1.0, LengthUnit.FEET);
-        Quantity<LengthUnit> targetInches = new Quantity<>(12.0, LengthUnit.INCHES);
-        System.out.println("Length Equivalency Match: " + demonstrateEquality(lengthsMatch, targetInches));
+        // Preservation of Legacy Dimensions (Length/Weight)
+        Quantity<LengthUnit> oneFoot = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> twelveInches = new Quantity<>(12.0, LengthUnit.INCHES);
+        System.out.println("Length Equivalency Match: " + demonstrateEquality(oneFoot, twelveInches));
 
-        Quantity<WeightUnit> kgWeight = new Quantity<>(1.0, WeightUnit.KILOGRAM);
-        Quantity<WeightUnit> gWeight = new Quantity<>(1000.0, WeightUnit.GRAM);
-        System.out.println("Weight Equivalency Match: " + demonstrateEquality(kgWeight, gWeight));
+        // Validation of New Volume Dimensions
+        Quantity<VolumeUnit> oneLitre = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> thousandMl = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        System.out.println("Volume Equivalency Match: " + demonstrateEquality(oneLitre, thousandMl));
+
+        Quantity<VolumeUnit> oneGallon = new Quantity<>(1.0, VolumeUnit.GALLON);
+        Quantity<VolumeUnit> addedVolume = demonstrateAddition(oneLitre, oneGallon, VolumeUnit.LITRE);
+        System.out.println("1 L + 1 Gal converted to Litres: " + addedVolume);
     }
 }
