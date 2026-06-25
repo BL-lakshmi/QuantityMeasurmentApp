@@ -1,8 +1,8 @@
 package com.bl.quantitymeasurementapp;
 
-public enum LengthUnit {
-    FEET(1.0),
+public enum LengthUnit implements IMeasurable {
     INCHES(1.0 / 12.0),
+    FEET(1.0),
     YARDS(3.0),
     CENTIMETERS(1.0 / 30.48);
 
@@ -12,27 +12,23 @@ public enum LengthUnit {
         this.conversionFactor = conversionFactor;
     }
 
+    @Override
     public double getConversionFactor() {
         return this.conversionFactor;
     }
 
-    /**
-     * Converts a given value in this unit to the base unit (FEET).
-     *
-     * @param value the numeric value to convert
-     * @return value expressed in FEET
-     */
+    @Override
     public double convertToBaseUnit(double value) {
         return value * this.conversionFactor;
     }
 
-    /**
-     * Converts a base unit value (FEET) into this specific unit destination.
-     *
-     * @param baseValue the value in FEET
-     * @return value expressed in this unit
-     */
+    @Override
     public double convertFromBaseUnit(double baseValue) {
         return baseValue / this.conversionFactor;
+    }
+
+    @Override
+    public String getUnitName() {
+        return this.name();
     }
 }

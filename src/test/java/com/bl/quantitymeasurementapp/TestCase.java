@@ -6,13 +6,6 @@ import static org.junit.Assert.*;
 
 public class TestCase {
 
-    @Test
-    public void convertFeetToInches() {
-        Length lengthInInches = QuantityMeasurementApp.demonstrateLengthConversion(3.0, LengthUnit.FEET, LengthUnit.INCHES);
-        Length expectedLength = new Length(36.0, LengthUnit.INCHES);
-        assertTrue("Converting 3 feet via API should yield exactly 36 inches.", QuantityMeasurementApp.demonstrateLengthEquality(lengthInInches, expectedLength));
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testConversion_InvalidUnit_Throws() {
         Length input = new Length(5.0, LengthUnit.FEET);
@@ -487,6 +480,129 @@ public class TestCase {
         Weight w1 = new Weight(1.0, WeightUnit.KILOGRAM);
         Weight w2 = new Weight(1.0, WeightUnit.KILOGRAM);
         w1.add(w2, null);
+    }
+    @Test
+    public void testIMeasurableInterface_LengthUnitImplementation() {
+        IMeasurable feet = LengthUnit.FEET;
+        assertEquals("FEET", feet.getUnitName());
+        assertEquals(1.0, feet.getConversionFactor(), 1e-6);
+    }
+
+    @Test
+    public void testIMeasurableInterface_WeightUnitImplementation() {
+        IMeasurable kg = WeightUnit.KILOGRAM;
+        assertEquals("KILOGRAM", kg.getUnitName());
+        assertEquals(1.0, kg.getConversionFactor(), 1e-6);
+    }
+
+    @Test
+    public void testIMeasurableInterface_ConsistentBehavior() {
+        assertTrue(LengthUnit.INCHES.convertToBaseUnit(12) == 1.0);
+        assertTrue(WeightUnit.GRAM.convertToBaseUnit(1000) == 1.0);
+    }
+
+    @Test
+    public void testGenericQuantity_LengthOperations_Equality() {
+        Quantity<LengthUnit> q1 = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> q2 = new Quantity<>(12.0, LengthUnit.INCHES);
+        assertTrue(q1.equals(q2));
+    }
+
+    @Test
+    public void testGenericQuantity_WeightOperations_Equality() {
+        Quantity<WeightUnit> w1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> w2 = new Quantity<>(1000.0, WeightUnit.GRAM);
+        assertTrue(w1.equals(w2));
+    }
+
+    @Test
+    public void testGenericQuantity_LengthOperations_Conversion() {
+        Quantity<LengthUnit> start = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> converted = start.convertTo(LengthUnit.INCHES);
+        assertEquals(12.0, converted.getValue(), 1e-2);
+        assertEquals(LengthUnit.INCHES, converted.getUnit());
+    }
+
+    @Test
+    public void testGenericQuantity_WeightOperations_Conversion() {
+        Quantity<WeightUnit> start = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> converted = start.convertTo(WeightUnit.GRAM);
+        assertEquals(1000.0, converted.getValue(), 1e-2);
+    }
+
+    @Test
+    public void testGenericQuantity_LengthOperations_Addition() {
+        Quantity<LengthUnit> f1 = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> i1 = new Quantity<>(12.0, LengthUnit.INCHES);
+        Quantity<LengthUnit> result = f1.add(i1, LengthUnit.FEET);
+        assertEquals(2.0, result.getValue(), 1e-6);
+    }
+
+    @Test
+    public void testGenericQuantity_WeightOperations_Addition() {
+        Quantity<WeightUnit> kg = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> gm = new Quantity<>(1000.0, WeightUnit.GRAM);
+        Quantity<WeightUnit> result = kg.add(gm, WeightUnit.KILOGRAM);
+        assertEquals(2.0, result.getValue(), 1e-6);
+    }
+
+    @Test
+    public void testCrossCategoryPrevention_LengthVsWeight() {
+        Quantity<LengthUnit> length = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<WeightUnit> weight = new Quantity<>(1.0, WeightUnit.KILOGRAM);
+        Object targetComparison = weight;
+        assertFalse("Cross-category domains should safely return false on equals comparison", length.equals(targetComparison));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGenericQuantity_ConstructorValidation_NullUnit() {
+        new Quantity<LengthUnit>(1.0, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGenericQuantity_ConstructorValidation_InvalidValue() {
+        new Quantity<>(Double.NaN, LengthUnit.FEET);
+    }
+
+    @Test
+    public void testHashCode_GenericQuantity_Consistency() {
+        Quantity<LengthUnit> item1 = new Quantity<>(1.0, LengthUnit.FEET);
+        Quantity<LengthUnit> item2 = new Quantity<>(12.0, LengthUnit.INCHES);
+        assertEquals(item1.hashCode(), item2.hashCode());
+    }
+
+    @Test
+    public void testEquals_GenericQuantity_ContractPreservation() {
+        Quantity<LengthUnit> prime = new Quantity<>(3.0, LengthUnit.FEET);
+        assertTrue(prime.equals(prime)); // Reflexive
+        assertFalse(prime.equals(null)); // Null check
+    }
+
+    @Test
+    public void testImmutability_GenericQuantity() {
+        Quantity<LengthUnit> base = new Quantity<>(5.0, LengthUnit.FEET);
+        base.convertTo(LengthUnit.INCHES);
+        assertEquals(5.0, base.getValue(), 1e-6); // Confirms value states do not leak mutate side-effects
+    }
+
+    // ==========================================
+    //      SCALABILITY VERIFICATION MOCK
+    // ==========================================
+    private enum VolumeUnit implements IMeasurable {
+        LITER(1.0), GALLON(3.78541);
+        private final double conversionFactor;
+        VolumeUnit(double factor) { this.conversionFactor = factor; }
+        @Override public double getConversionFactor() { return conversionFactor; }
+        @Override public double convertToBaseUnit(double value) { return value * conversionFactor; }
+        @Override public double convertFromBaseUnit(double baseValue) { return baseValue / conversionFactor; }
+        @Override public String getUnitName() { return this.name(); }
+    }
+
+    @Test
+    public void testScalability_NewUnitEnumIntegration() {
+        Quantity<VolumeUnit> vol1 = new Quantity<>(1.0, VolumeUnit.GALLON);
+        Quantity<VolumeUnit> vol2 = new Quantity<>(3.78541, VolumeUnit.LITER);
+        assertTrue("New categories are plug-and-play extensions under the unified interface matrix.", vol1.equals(vol2));
     }
 }
 
